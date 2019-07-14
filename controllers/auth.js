@@ -44,6 +44,21 @@ router.post('/login',(req,res)=>{
       res.send({data:"Something went wrong"});
       return;
     }
+
+    if(!user){
+      res.send({status:"User with this email doesnot exist"});
+      return;
+    }
+
+    const passwordMatch = bcrypt.compareSync(Password,user.Password);
+    
+    // check for correct password
+
+    if(!passwordMatch){
+      res.send({error:"Password is invalid. Please Enter Correct Password"});
+      return;
+    }
+    res.send({status:"User Verified Successfully"});
   })
 })
 
