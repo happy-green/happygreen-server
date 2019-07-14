@@ -1,0 +1,18 @@
+{
+  "name": "happygreen.server",
+  "version": "1.0.0",
+  "description": "Server for happy green",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Abhi Patel",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.6.2"
+  }
+}
