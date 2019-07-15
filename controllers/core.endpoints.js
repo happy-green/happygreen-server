@@ -1,8 +1,7 @@
-const auth = require('./auth');
+const authRoutes = require('./endpoints.auth');
+const userRoutes = require('./endpoints.user');
 
 module.exports = (app)=>{
-  app.use('/auth/',auth);
-  app.get('/',(req,res)=>{
-    res.send("Working");
-  })
+  app.use('/auth/',authRoutes);
+  app.use('/user/',userRoutes)
 }
