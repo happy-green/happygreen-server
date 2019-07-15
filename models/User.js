@@ -16,6 +16,18 @@ const UserSchema = new mongoose.Schema({
     default:false,
     type:Boolean
   },
+  Age:Number,
+  FirstName:String,
+  LastName:String,
+  Address:{
+    City:String,
+    State:String,
+    Country:String
+  },
+  Bio:{
+    type:String
+  },
+  Gender:String
 })
 
 const User = mongoose.model('User',UserSchema);
