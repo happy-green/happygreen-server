@@ -67,4 +67,40 @@ router.post('/update/bio',authMiddleware,(req,res)=>{
   })
 })
 
+/* 
+  Follow someone..
+
+  if i follow my friend..
+    Add him in my followings and add me in his followers
+*/
+
+router.post('/follow',authMiddleware,(req,res)=>{
+  const userId = req.userID;
+  const followUserId = req.body.followUserId;
+
+
+  UserProfile.findById(userId,(err,user)=>{
+    if(err) return res.status(400).json({msg:"Some thing went wrong"});
+
+    user.Followings.push(followUserId);
+    
+    user.save((err,success)=>{
+      if(err) return res.status(400).json({msg:"Error"});
+
+      UserProfile.findById(followUserId,(err,TargetUser)=>{
+
+        if(err) return res.status(400).json({msg:"Some thing went wrong"});
+
+        TargetUser.Followers.push(userId);
+
+        TargetUser.save((err,u)=>{
+          if(err) return res.status(400).json({msg:"Some thing went wrong"});
+          
+          return res.status(200).json({msg:"User Followed"})
+        })
+      })
+    })
+  })
+})
+
 module.exports = router;
