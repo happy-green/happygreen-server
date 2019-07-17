@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const assert = require('assert');
 const jwt = require('jsonwebtoken');
@@ -7,13 +6,20 @@ const jwt = require('jsonwebtoken');
 const secret = "mySecret"; // TODO: Put this in a seperate config file.
 const saltRounds = 10;
 
+// Data models
+const User = require('../models/User');
+const Profile = require('../models/Profile');
+
+
 // Route to handle user registeration
 router.post('/register',(req,res)=>{
   // Look for existing users
   const {UserName,Email,Password} = req.body;
   User.findOne({Email},(err,existing_user)=>{
+    
     if(err) return;
     if(existing_user) res.status(400).json({msg:"User with this email already exists"});
+    
     else{
       // Create new user if doesnot exist
 
@@ -32,21 +38,27 @@ router.post('/register',(req,res)=>{
       NewUser.save((err,document)=>{
         if(err) return res.status(400).json({msg:"Error Creating user"});
         
-        // generate token 
+        const userProfile = new Profile();
+        userProfile._id = document.id;
 
-        jwt.sign({id:document.id},secret,(err,token)=>{
+        userProfile.save((err,profile)=>{
+          if(err) return res.status(200).json({msg:"Error creating a profile"})
 
-          if(err) return res.status(400).json({msg:"Something went wrong"})
+          // generate token 
           
-          const sendData = {
-            token,
-            user:{
-              username:document.UserName,
-              email:document.Email,
-              id:document.id
+          jwt.sign({id:document.id},secret,(err,token)=>{
+            if(err) return res.status(400).json({msg:"Something went wrong"})
+          
+            const sendData = {
+              token,
+              user:{
+                username:document.UserName,
+                email:document.Email,
+                id:document.id
+              }
             }
-          }
-          return res.status(200).json(sendData)
+            return res.status(200).json(sendData)
+          })
         })
       })
     }
