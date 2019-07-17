@@ -13,7 +13,7 @@ const checkToken = (req,res,next) => {
   } 
   catch (e) {
     console.log(e);
-    return res.send(400).json({msg:"Invalid shit"})
+    return res.status(400).json({msg:"Invalid shit"})
   }
 }
 
