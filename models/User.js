@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const UserProfile = require('./Profile');
+
 const UserSchema = new mongoose.Schema({
   UserName:String,
   Email:{
@@ -16,18 +18,10 @@ const UserSchema = new mongoose.Schema({
     default:false,
     type:Boolean
   },
-  Age:Number,
-  FirstName:String,
-  LastName:String,
-  Address:{
-    City:String,
-    State:String,
-    Country:String
-  },
-  Bio:{
-    type:String
-  },
-  Gender:String
+  Profile:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:'Profile'
+  }
 })
 
 const User = mongoose.model('User',UserSchema);
