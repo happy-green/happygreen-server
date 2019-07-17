@@ -9,98 +9,86 @@ const authMiddleware = require('../middlewares/middleware.auth');
 
 // add data to profile
 
-router.post('/update/',authMiddleware,(req,res)=>{
-  const userId = req.userID;
-  
-  console.log(userId);
-  
-  const {fullName,gender} = req.body;
+router.post('/update/',authMiddleware,async (req,res)=>{
+  try{
+    const userId = req.userID;
+    const {fullName,gender} = req.body;
 
-  UserProfile.findById(userId,(err,user)=>{
-    if(err) return res.status(400).json({msg:"something went wrong"});
+    const currentUser =  await UserProfile.findById(userId);
+    const done  = await currentUser.update({FullName:fullName,Gender:gender})
 
-    // user found    
-
-    user.update({FullName:fullName,Gender:gender},(err,data)=>{
-      if(err) return res.status(400).json({msg:"Update failed"});
-
-      return res.status(200).json({msg:"Update Sucessfull"});
-    })
-
-    
-  })
+    if(done) return res.status(200).json({msg:"Update Sucessfull"});
+  }
+  catch(e){
+    return res.status(400).json({msg:"something went wrong"});
+  }
 })
 
 // get user data
 
-router.get('/',authMiddleware,(req,res)=>{
-  const userId = req.userID;
+router.get('/',authMiddleware,async (req,res)=>{
 
-  console.log(userId)
-  UserProfile.findById(userId,(err,user)=>{
-    if(err) return res.status(400).json({msg:"something went wrong"});
+  try{  
+    const userId = req.userID;
+    const user = await UserProfile.findById(userId);
 
     if(!user) return res.status(400).json({msg:"No such user"});
 
     return res.status(200).json({profile:user});
-  })
+  }
+  catch(er){
+    return res.status(400).json({msg:"Something went wrong"})
+  }
 })
 
 
 // update user bio
 
-router.post('/update/bio',authMiddleware,(req,res)=>{
-  const userId = req.userID;
+router.post('/update/bio',authMiddleware,async (req,res)=>{
+  try{
 
-
-  UserProfile.findById(userId,(err,user)=>{
-    if(err) return res.status(400).json({msg:"something went wrong"});
+    const userId = req.userID;
+    const { userBio } = req.body;
+  
+    const user = await UserProfile.findById(userId);
+    
+    console.log(user);
 
     if(!user) return res.status(400).json({msg:"No such user"});
-
-    const {userBio} = req.body;
-    user.updateOne({Bio:userBio},(err,data)=>{
-      if(err) return res.status(400).json({msg:"something went wrong"});
-      
-      return res.status(200).json({msg:"Bio Updated successfully"});
-    })
-  })
+  
+    const updateStatus = await user.updateOne({Bio:userBio});
+  
+    return res.status(200).json({msg:"Bio Updated successfully"});
+  
+  }
+  catch(er){
+    return res.status(400).json({msg:"Something went wrong"})
+  }
 })
 
-/* 
-  Follow someone..
+// Follow someone
 
-  if i follow my friend..
-    Add him in my followings and add me in his followers
-*/
+router.post('/follow',authMiddleware,async (req,res)=>{
+  try{
 
-router.post('/follow',authMiddleware,(req,res)=>{
-  const userId = req.userID;
-  const followUserId = req.body.followUserId;
+    const userId = req.userID;
+    const followUserId = req.body.followUserId;
+  
+    const currentUser = await UserProfile.findById(userId);
 
-
-  UserProfile.findById(userId,(err,user)=>{
-    if(err) return res.status(400).json({msg:"Some thing went wrong"});
-
-    user.Followings.push(followUserId);
-    
-    user.save((err,success)=>{
-      if(err) return res.status(400).json({msg:"Error"});
-
-      UserProfile.findById(followUserId,(err,TargetUser)=>{
-
-        if(err) return res.status(400).json({msg:"Some thing went wrong"});
-
-        TargetUser.Followers.push(userId);
-
-        TargetUser.save((err,u)=>{
-          if(err) return res.status(400).json({msg:"Some thing went wrong"});
-          
-          return res.status(200).json({msg:"User Followed"})
-        })
-      })
-    })
-  })
+    currentUser.Followings.push(followUserId);
+  
+    const targetUser = await UserProfile.findById(followUserId);
+    targetUser.Followers.push(userId);
+  
+    const followed = await currentUser.save();  
+    const doneFollower = await targetUser.save();
+  
+    return res.status(200).json({msg:"User Followed"})
+  }
+  catch(err){
+    return res.status(400).json({msg:"Something went wrong"})
+  }
 })
 
 module.exports = router;
