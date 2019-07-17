@@ -1,5 +1,7 @@
 const UserModel = require('../models/User');
 const router = require('express').Router();
+const UserProfile = require('../models/Profile');
+
 
 // middlewares
 
@@ -12,19 +14,19 @@ router.post('/update/',authMiddleware,(req,res)=>{
   
   console.log(userId);
   
-  const {firstName,lastName,gender} = req.body;
+  const {fullName,gender} = req.body;
 
-  UserModel.findById(userId,(err,user)=>{
+  UserProfile.findById(userId,(err,user)=>{
     if(err) return res.status(400).json({msg:"something went wrong"});
 
-    // user found
-    
+    // user found    
 
-    user.update({FirstName:firstName,LastName:lastName,Gender:gender},(err,data)=>{
+    user.update({FullName:fullName,Gender:gender},(err,data)=>{
       if(err) return res.status(400).json({msg:"Update failed"});
 
       return res.status(200).json({msg:"Update Sucessfull"});
     })
+
     
   })
 })
@@ -34,15 +36,14 @@ router.post('/update/',authMiddleware,(req,res)=>{
 router.get('/',authMiddleware,(req,res)=>{
   const userId = req.userID;
 
-  UserModel.findById(userId,(err,user)=>{
+  console.log(userId)
+  UserProfile.findById(userId,(err,user)=>{
     if(err) return res.status(400).json({msg:"something went wrong"});
 
     if(!user) return res.status(400).json({msg:"No such user"});
 
-    return res.status(200).json({user});
+    return res.status(200).json({profile:user});
   })
-  .select("-Password")
-  .select("-EmailVerified");
 })
 
 
@@ -52,7 +53,7 @@ router.post('/update/bio',authMiddleware,(req,res)=>{
   const userId = req.userID;
 
 
-  UserModel.findById(userId,(err,user)=>{
+  UserProfile.findById(userId,(err,user)=>{
     if(err) return res.status(400).json({msg:"something went wrong"});
 
     if(!user) return res.status(400).json({msg:"No such user"});
