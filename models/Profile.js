@@ -6,15 +6,16 @@ const ProfileSchema = new mongoose.Schema({
     type:mongoose.Schema.Types.ObjectId,
     ref:'User'
   },
-  Followers:{
+  Followers:[{
     type:mongoose.Schema.Types.ObjectId,
-    ref:'Follwers'
-  },
+    ref:'Profile'
+  }],
 
-  Followings:{
+  Followings:[{
     type:mongoose.Schema.Types.ObjectId,
-    ref:'Follwings'
-  },
+    ref:'Profile'
+  }],
+
   Posts:{
     type:mongoose.Schema.Types.ObjectId,
     ref:'Posts'
@@ -29,16 +30,6 @@ const ProfileSchema = new mongoose.Schema({
   Gender:String,
 })
 
-const FollowersSchema = new mongoose.Schema({
-  _id:mongoose.Schema.Types.ObjectId,
-  followers:[{type:mongoose.Schema.Types.ObjectId,ref:'User'}],
-
-})
-
-const FollowingsSchmea = new mongoose.Schema({
-  _id:mongoose.Schema.Types.ObjectId,
-  followings:[{type:mongoose.Schema.Types.ObjectId,ref:'User'}],
-})
 
 
 // const PostSchema = new mongoose.Schema({
@@ -46,9 +37,6 @@ const FollowingsSchmea = new mongoose.Schema({
 // })
 
 
-// Sub models
-const Followers = mongoose.model('Followers',FollowersSchema);
-const Followings = mongoose.model('Follwings',FollowingsSchmea);
 
 //const Posts = mongoose.model('Posts',PostSchema);
 
